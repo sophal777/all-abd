@@ -1,10 +1,40 @@
 import os
 import subprocess
 
+
 ADB = r"C:\platform-tools\adb.exe"
+
+all_My_file = "My_file"
+
+myPhth = "Phth"
+myVideos = "Videos"
+Pull_APK = "Pulled_APK"
+
+
+def create_folders(*folder_names):
+
+    for folder_name in folder_names:
+
+        path = os.path.join(
+            all_My_file,
+            folder_name
+        )
+
+        os.makedirs(
+            path,
+            exist_ok=True
+        )
+
+
+create_folders(
+    myPhth,
+    myVideos,
+    Pull_APK
+)
 
 
 def apk_manager(device=None):
+
     # =========================
     # 1. Get Installed Apps
     # =========================
@@ -37,9 +67,11 @@ def apk_manager(device=None):
     apps = []
 
     for line in result.stdout.splitlines():
+
         line = line.strip()
 
         if line.startswith("package:"):
+
             package_name = line.replace(
                 "package:",
                 "",
@@ -56,13 +88,19 @@ def apk_manager(device=None):
     print("Installed Apps:")
 
     for i, package_name in enumerate(apps, 1):
-        print(f"{i}. {package_name}")
+
+        print(
+            f"{i}. {package_name}"
+        )
 
     # =========================
     # 3. Pull All APKs
     # =========================
 
-    output_folder = "Pulled_APK"
+    output_folder = os.path.join(
+        all_My_file,
+        Pull_APK
+    )
 
     os.makedirs(
         output_folder,
@@ -72,6 +110,10 @@ def apk_manager(device=None):
     print("\nPulling APKs...\n")
 
     for package_name in apps:
+
+        # =========================
+        # Get APK Path
+        # =========================
 
         command = [ADB]
 
@@ -94,15 +136,21 @@ def apk_manager(device=None):
         )
 
         if result.returncode != 0:
-            print(f"APK Path not found: {package_name}")
+
+            print(
+                f"APK Path not found: {package_name}"
+            )
+
             continue
 
         apk_paths = []
 
         for line in result.stdout.splitlines():
+
             line = line.strip()
 
             if line.startswith("package:"):
+
                 apk_path = line.replace(
                     "package:",
                     "",
@@ -113,15 +161,25 @@ def apk_manager(device=None):
                     apk_paths.append(apk_path)
 
         # =========================
-        # 4. Pull APK
+        # Pull APK
         # =========================
 
-        for index, apk_path in enumerate(apk_paths, 1):
+        for index, apk_path in enumerate(
+            apk_paths,
+            1
+        ):
 
             if len(apk_paths) == 1:
-                filename = f"{package_name}.apk"
+
+                filename = (
+                    f"{package_name}.apk"
+                )
+
             else:
-                filename = f"{package_name}_{index}.apk"
+
+                filename = (
+                    f"{package_name}_{index}.apk"
+                )
 
             output_file = os.path.join(
                 output_folder,
@@ -148,13 +206,24 @@ def apk_manager(device=None):
             )
 
             if result.returncode == 0:
-                print(f"Pulled: {output_file}")
+
+                print(
+                    f"Pulled: {output_file}"
+                )
+
             else:
-                print(f"Failed: {package_name}")
+
+                print(
+                    f"Failed: {package_name}"
+                )
+
                 print(result.stderr)
 
     return apps
 
 
+# =========================
 # Run
+# =========================
+
 apps = apk_manager()
