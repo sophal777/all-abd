@@ -594,4 +594,4 @@ class MainWindow(QWidget):
         subprocess.run([self.ADB, "-s", device, "shell", "monkey", "-p", "com.facebook.lite", "1"], capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
         self.result_signal.emit("Facebook Lite Opened")
 
-    def open_youtube(self, device)
+    def open_youtube(self, device)f, device)
